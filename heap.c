@@ -30,11 +30,17 @@ size_t alloced_size  = 0;
 
 void* shaunalloc(size_t size) {
 
-    if (size == 0) return NULL;
+    if (size == 0) {
+        printf("Size must be positive\n");
+        return NULL;
+    }
 
     size_t padded_size = BLOCK_SIZE - (size % BLOCK_SIZE) + size; // aligning for chunks of size 8 bytes
 
-    if (alloced_size + padded_size + sizeof(Block) > HEAP_SIZE) return NULL;
+    if (alloced_size + padded_size + sizeof(Block) > HEAP_SIZE) {
+        printf("Insufficient storage on heap\n");
+        return NULL;
+    }
 
     for (int i = 0; i < freed.size; i++) {
         Block *block = (Block *) freed.list[i];
@@ -90,6 +96,18 @@ void* shaunalloc(size_t size) {
 }
 
 void free(void* ptr) {
+
+    int flag = 0;
+
+    for (int i = 0; i < alloced.size; i++) {
+        if (alloced.list[i] == ptr) flag = 1;
+    }
+
+    if (flag == 0) {
+        printf("You are trying to free invalid memory\n");
+        return;
+    }
+
     // user will have access to only the pointer to the payload, so we point the header pointer to the header of the block
     Block* header = (Block *) ptr - 1;
 
@@ -218,5 +236,4 @@ void main() {
 
     int *y = ptr3;
     printf("\n%d\n", *y);
-
 }
