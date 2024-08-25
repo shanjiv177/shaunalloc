@@ -37,28 +37,28 @@ void* shaunalloc(size_t size) {
 
     for (int i = 0; i < freed.size; i++) {
         Block *block = (Block *) freed.list[i];
+        // Getting header of the block
+        block--;
 
-        if (block->size - padded_size >= 24) {
-            // getting header of the block
-            block--;
+        if (((int) (block->size - padded_size)) >= 24) {
+            size_t curr_block_size = block->size;
             block->size = padded_size;
             block->free = 0;
 
             alloced.list[alloced.size++] = block->start;
 
             // creating a new block for the remaining space
-            Block *newBlock = (Block *) ((void* ) block + sizeof(block) + padded_size);
-            newBlock->start = (void *) newBlock + sizeof(block);
+            Block *newBlock = (Block *) (block->start + padded_size);
+            newBlock->start = block->start + padded_size + sizeof(Block);
             newBlock->free = 1;
-            newBlock->size = block->size - padded_size - sizeof(Block);
+            newBlock->size = curr_block_size - padded_size - sizeof(Block);
 
-            freed.list[i] = (void *) newBlock;
+            freed.list[i] = newBlock->start;
             
             return block->start;
         }
 
         if (block->size >= padded_size) {
-            block--;
             block->size = padded_size;
             block->free = 0;
 
@@ -73,7 +73,6 @@ void* shaunalloc(size_t size) {
             return block->start;
         }
     }
-
     void *alloced_mem = heap + alloced_size; // Pointer to the start of the block + header
 
     Block *newBlock = (Block*) alloced_mem;
@@ -162,36 +161,52 @@ void* realloc(void* ptr, size_t size) {
     return mem;
 }
 
+size_t get_size(void *ptr) {
+    Block *block = (Block *) ptr;
+    block--;
+
+    return block->size;
+}
+
+void memory_inspect() {
+
+    // printf("Memory Allocated (in use) and their sizes: \n");
+    // for (int i = 0; i < alloced.size; i++) {
+    //     printf("\t%p\n", alloced.list[i]);
+    // }
+
+    // printf("Memory Freed (not in use) and their sizes in bytes: \n");
+    // for (int i = 0; i < freed.size; i++) {
+    //     printf("\t%p\n", freed.list[i]);
+    // }
+
+    // printf("\n");
+
+    printf("Memory Allocated (in use) and their sizes in bytes: \n");
+    for (int i = 0; i < alloced.size; i++) {
+        printf("\t%p %ld\n", alloced.list[i], get_size(alloced.list[i]));
+    }
+
+    printf("Memory Freed (not in use) and their sizes in bytes: \n");
+    for (int i = 0; i < freed.size; i++) {
+        printf("\t%p %ld\n", freed.list[i], get_size(freed.list[i]));
+    }
+
+    printf("Size assigned till now: %ld\n\n", alloced_size);
+}
+
 void main() {
     init_heap();
+    void *ptr1 = shaunalloc(40);
+    memory_inspect();
 
-    void *ptr1 = shaunalloc(20);
+    void *ptr2 = shaunalloc(20);
+    memory_inspect(); 
 
-    for (int i = 0; i < alloced.size; i++) {
-        printf("%p\n", alloced.list[i]);
-    }
+    free(ptr1);
+    memory_inspect();
 
-    void* ptr5 = realloc(ptr1, 40);
+    void *ptr3 = realloc(ptr2,40);
+    memory_inspect();
 
-    printf("\n");
-    for (int i = 0; i < freed.size; i++) {
-        printf("%p\n", freed.list[i]);
-    }
-    printf("\n");
-    for (int i = 0; i < alloced.size; i++) {
-        printf("%d %p\n",i, alloced.list[i]);
-    }
-
-
-    void* ptr6 = shaunalloc(40);
-
-    printf("\n");
-    for (int i = 0; i < alloced.size; i++) {
-        printf("%d %p\n",i, alloced.list[i]);
-    }
-
-    printf("\n");
-    for (int i = 0; i < freed.size; i++) {
-        printf("%p\n", freed.list[i]);
-    }
 }
