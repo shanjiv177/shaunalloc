@@ -41,5 +41,5 @@ void main() {
 
     void *ptr = salloc(20);
 
-    
+
 }
