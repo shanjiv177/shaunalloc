@@ -142,34 +142,56 @@ void free(void* ptr) {
     }
 }
 
+void* realloc(void* ptr, size_t size) {
+    void *mem = shaunalloc(size);
+    char *cmem = (char *) mem;
+    char *cptr = (char *) ptr;
+    size_t padded_size = BLOCK_SIZE - (size % BLOCK_SIZE) + size;
+
+    Block *block = (Block *) ptr;
+    block--;
+    size_t current_size = block->size;
+
+
+    for (int i = sizeof(Block); i < current_size; i++) {
+        cmem[i] = cptr[i];
+    }
+
+    free(ptr);
+
+    return mem;
+}
+
 void main() {
     init_heap();
 
     void *ptr1 = shaunalloc(20);
 
-    void *ptr2 = shaunalloc(30);
-
-    void *ptr3 = shaunalloc(10);
-
-    void *ptr4 = shaunalloc(15);
-
     for (int i = 0; i < alloced.size; i++) {
         printf("%p\n", alloced.list[i]);
     }
 
-    free(ptr2);
-    free(ptr3);
-
-    void* ptr5 = shaunalloc(40);
+    void* ptr5 = realloc(ptr1, 40);
 
     printf("\n");
     for (int i = 0; i < freed.size; i++) {
         printf("%p\n", freed.list[i]);
     }
+    printf("\n");
+    for (int i = 0; i < alloced.size; i++) {
+        printf("%d %p\n",i, alloced.list[i]);
+    }
+
+
+    void* ptr6 = shaunalloc(40);
 
     printf("\n");
-
     for (int i = 0; i < alloced.size; i++) {
-        printf("%p\n", alloced.list[i]);
+        printf("%d %p\n",i, alloced.list[i]);
+    }
+
+    printf("\n");
+    for (int i = 0; i < freed.size; i++) {
+        printf("%p\n", freed.list[i]);
     }
 }
