@@ -1,4 +1,5 @@
 #include <stdio.h>
+// #include <string.h>
 #include <sys/mman.h>
 
 # define HEAP_SIZE 65536
@@ -144,17 +145,18 @@ void free(void* ptr) {
 void* realloc(void* ptr, size_t size) {
     void *mem = shaunalloc(size);
     char *cmem = (char *) mem;
-    char *cptr = (char *) ptr;
+    const char *cptr = (const char *) ptr;
     size_t padded_size = BLOCK_SIZE - (size % BLOCK_SIZE) + size;
 
     Block *block = (Block *) ptr;
     block--;
     size_t current_size = block->size;
 
-
-    for (int i = sizeof(Block); i < current_size; i++) {
+    for (int i =0; i < current_size; i++) {
         cmem[i] = cptr[i];
     }
+
+    // memcpy(mem, ptr, size);
 
     free(ptr);
 
@@ -203,10 +205,18 @@ void main() {
     void *ptr2 = shaunalloc(20);
     memory_inspect(); 
 
+    int* x = ptr2;
+
+    *x = 10;
+    printf("\n%d\n", *x);
+
     free(ptr1);
     memory_inspect();
 
     void *ptr3 = realloc(ptr2,40);
     memory_inspect();
+
+    int *y = ptr3;
+    printf("\n%d\n", *y);
 
 }
