@@ -6,9 +6,11 @@ Trying to write a memory allocator that when finished would hopefully do somethi
 
 The program gets a 64KB chunk of memory through mmap.
 
+Each block which would be assigned is padded to nearest 8 bytes.
+
 The program is all about how the heap/memory from mmap is being assigned and managed.
 
-There are three main functions
+There are four main functions
 - shaunalloc
 - free
 - realloc
