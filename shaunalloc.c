@@ -215,25 +215,25 @@ void memory_inspect() {
     printf("Size assigned till now: %ld\n\n", alloced_size);
 }
 
-void main() {
-    init_heap();
-    void *ptr1 = shaunalloc(40);
-    memory_inspect();
+// void main() {
+//     init_heap();
+//     void *ptr1 = shaunalloc(40);
+//     memory_inspect();
 
-    void *ptr2 = shaunalloc(20);
-    memory_inspect(); 
+//     void *ptr2 = shaunalloc(20);
+//     memory_inspect(); 
 
-    int* x = ptr2;
+//     int* x = ptr2;
 
-    *x = 10;
-    printf("\n%d\n", *x);
+//     *x = 10;
+//     printf("\n%d\n", *x);
 
-    free(ptr1);
-    memory_inspect();
+//     free(ptr1);
+//     memory_inspect();
 
-    void *ptr3 = realloc(ptr2,40);
-    memory_inspect();
+//     void *ptr3 = realloc(ptr2,40);
+//     memory_inspect();
 
-    int *y = ptr3;
-    printf("\n%d\n", *y);
-}
+//     int *y = ptr3;
+//     printf("\n%d\n", *y);
+// }
