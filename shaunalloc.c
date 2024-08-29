@@ -161,6 +161,29 @@ void free(void* ptr) {
 }
 
 void* realloc(void* ptr, size_t size) {
+
+
+    if (size == 0) {
+        free(ptr);
+        return;
+    }
+
+    int flag = 0;
+
+    for (int i = 0; i < alloced.size; i++) {
+        if (alloced.list[i] == ptr) flag = 1;
+    }
+
+    if (flag == 0) {
+        printf("You are trying to free invalid memory\n");
+        return;
+    }
+
+    if (ptr == NULL) {
+        printf("Invalid address\n");
+        return;
+    }
+
     void *mem = shaunalloc(size);
     char *cmem = (char *) mem;
     const char *cptr = (const char *) ptr;
