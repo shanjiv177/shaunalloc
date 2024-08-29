@@ -104,7 +104,7 @@ void free(void* ptr) {
     }
 
     if (flag == 0) {
-        printf("You are trying to free invalid memory\n");
+        printf("You are trying to free already freed memory\n");
         return;
     }
 
@@ -175,7 +175,7 @@ void* realloc(void* ptr, size_t size) {
     }
 
     if (flag == 0) {
-        printf("You are trying to free invalid memory\n");
+        printf("You are trying to realloc freed memory\n");
         return;
     }
 
